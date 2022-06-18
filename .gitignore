@@ -1,0 +1,7 @@
+/pkg
+/target
+/Cargo.lock
+web/pkg
+web/dist
+web/assets
+tests.js
