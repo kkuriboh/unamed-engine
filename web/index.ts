@@ -3,7 +3,7 @@ import init, {
 	Engine,
 	CollisionShape,
 	get_collision_between_collider_and_moving_object,
-} from './pkg/dbr_jam.js'
+} from './pkg/engine.js'
 /*import {
 	load_image,
 	// configure_game,
@@ -23,11 +23,6 @@ async function main() {
 
 main().catch(console.error)
 
-type Vec2 = {
-	x: number
-	y: number
-}
-
 function run() {
 	const engine = new Engine(
 		GAME_WIDTH,
@@ -38,7 +33,7 @@ function run() {
 	const coll_body = new CollisionBody(CollisionShape.RECT, 100, 100, 0, 0)
 	const coll_body2 = new CollisionBody(CollisionShape.RECT, 100, 100, 0, 0)
 
-	engine.create_element('banana', coll_body, 200, 100)
+	engine.create_element('banana', coll_body, 160, 100)
 	engine.create_element('abacate', coll_body2, 100, 100)
 	engine.get_element('banana')?.draw_collisions(engine)
 	engine.get_element('abacate')?.draw_collisions(engine)

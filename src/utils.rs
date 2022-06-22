@@ -22,12 +22,6 @@ where
 	Vec2 { x, y }
 }
 
-/*#[derive(PartialEq)]
-pub struct Vertex {
-	pub x: Vec2<f64>,
-	pub y: Vec2<f64>,
-}*/
-
 #[derive(PartialEq, Serialize)]
 pub struct Edge {
 	pub start: Vec2<f64>,
@@ -61,6 +55,41 @@ impl CollisionBody {
 	}
 	pub fn get_shape(&self) -> CollisionShape {
 		self.shape
+	}
+}
+
+impl CollisionBody {
+	pub fn get_edges(&self, parent_pos: Vec2<f64>) -> Vec<Edge> {
+		match self.shape {
+			CollisionShape::RECT => vec![
+				Edge /* top */ {
+					start: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y),
+					end: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y),
+				},
+				Edge /* right */ {
+					start: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y),
+					end: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64),
+				},
+				Edge /* bottom */ {
+					start: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64),
+					end: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y + self.dimensions.y as f64),
+				},
+				Edge /* left */ {
+					start: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y + self.dimensions.y as f64),
+					end: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y),
+				},
+			],
+			CollisionShape::ELIPSE => vec![
+				Edge /* horizontal radius */ {
+					start: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64 / 2., parent_pos.y + self.pos.y + self.dimensions.y as f64 / 2.),
+					end: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64 / 2.),
+				},
+				Edge /* vertical radius */ {
+					start: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64 / 2., parent_pos.y + self.pos.y + self.dimensions.y as f64 / 2.),
+					end: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64 / 2., parent_pos.y + self.pos.y),
+				},
+			],
+		}
 	}
 }
 
@@ -105,25 +134,25 @@ impl Element {
 						start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64, self.pos.y + body.pos.y),
 						end: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64, self.pos.y + body.pos.y + body.dimensions.y as f64),
 					},
-                    Edge /* bottom */ {
-                        start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64, self.pos.y + body.pos.y + body.dimensions.y as f64),
-                        end: vec2(self.pos.x + body.pos.x, self.pos.y + body.pos.y + body.dimensions.y as f64),
-                    },
-                    Edge /* left */ {
+					Edge /* bottom */ {
+						start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64, self.pos.y + body.pos.y + body.dimensions.y as f64),
+						end: vec2(self.pos.x + body.pos.x, self.pos.y + body.pos.y + body.dimensions.y as f64),
+					},
+					Edge /* left */ {
 						start: vec2(self.pos.x + body.pos.x, self.pos.y + body.pos.y + body.dimensions.y as f64),
 						end: vec2(self.pos.x + body.pos.x, self.pos.y + body.pos.y),
-                    }
+					}
 				],
 				CollisionShape::ELIPSE => vec![
-                    Edge /* horizontal radius */ {
-                        start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 / 2., self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
-                        end: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64, self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
-                    },
-                    Edge /* vertical radius */ {
-                        start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 / 2., self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
-                        end: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 / 2., self.pos.y + body.pos.y),
-                    }
-                ],
+					Edge /* horizontal radius */ {
+						start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 / 2., self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
+						end: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64, self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
+					},
+					Edge /* vertical radius */ {
+						start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 / 2., self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
+						end: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 / 2., self.pos.y + body.pos.y),
+					}
+				],
 			})
 			.collect()
 	}
