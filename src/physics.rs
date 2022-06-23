@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-use crate::utils::{Element, Vec2};
+use crate::utils::{CollisionShape, Element, Vec2};
 use crate::Engine;
 
 #[wasm_bindgen]
@@ -28,36 +28,37 @@ pub fn get_collision_between_collider_and_moving_object(
 		return Err(err);
 	}
 
-	let mut collision_group = String::new();
-	moving_element.get_collision_group().iter().for_each(|mg| {
-		collider.get_collision_group().iter().for_each(|cg| {
-			if cg.contains(mg) {
-				collision_group.push_str(mg);
-			}
-		})
-	});
-	if !collision_group.is_empty() {
-		return Ok(false);
-	}
-
 	let mut collides = false;
-
 	moving_element.get_collision_bodies().iter().for_each(|me| {
 		let me_edges = me.get_edges(moving_element.get_pos());
 		collider.get_collision_bodies().iter().for_each(|ce| {
 			let c_edges = ce.get_edges(collider.get_pos());
-
-			me_edges.iter().for_each(|me_edge| {
-				let p0 = me_edge.start;
-				let p1 = me_edge.end;
-				c_edges.iter().for_each(|c_edge| {
-					let p2 = c_edge.start;
-					let p3 = c_edge.end;
-					if line_segments_collide(p0, p1, p2, p3) {
-						collides = true;
+			if me
+				.get_collision_groups()
+				.intersection(ce.get_collision_groups())
+				.count() == 0
+			{
+				collides = false;
+			} else {
+				match (me.get_shape(), ce.get_shape()) {
+					(CollisionShape::RECT, CollisionShape::RECT) => {
+						me_edges.iter().for_each(|me_edge| {
+							let p0 = me_edge.start;
+							let p1 = me_edge.end;
+							c_edges.iter().for_each(|c_edge| {
+								let p2 = c_edge.start;
+								let p3 = c_edge.end;
+								if line_segments_collide(p0, p1, p2, p3) {
+									collides = true;
+								}
+							})
+						});
 					}
-				})
-			});
+					(CollisionShape::CIRCLE, CollisionShape::CIRCLE) => {}
+					(CollisionShape::RECT, CollisionShape::CIRCLE)
+					| (CollisionShape::CIRCLE, CollisionShape::RECT) => {}
+				}
+			}
 		})
 	});
 
@@ -93,19 +94,19 @@ mod tests {
 	#[test]
 	fn basic_collision() {
 		let mut engine = Engine::new(320, 240, 300.0, 10.0);
-		let coll_body = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0.);
-		let coll_body2 = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0.);
+		let mut coll_body = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0., None, Some(0));
+		let mut coll_body2 = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0., None, Some(0));
+        coll_body.add_collision_group(1);
+        coll_body2.add_collision_group(1);
 
 		engine.create_element("banana".to_owned(), Some(coll_body), 39.9, 0.0);
 		engine
 			.get_element("banana".to_string())
-			.unwrap()
-			.add_collision_group("teste".to_string());
+			.unwrap();
 		engine.create_element("abacate".to_owned(), Some(coll_body2), 0.0, 0.0);
 		engine
 			.get_element("abacate".to_string())
-			.unwrap()
-			.add_collision_group("teste".to_string());
+			.unwrap();
 
 		let collides = get_collision_between_collider_and_moving_object(
 			"banana".to_owned(),
@@ -120,19 +121,19 @@ mod tests {
 	#[test]
 	fn non_collision_vertical() {
 		let mut engine = Engine::new(320, 240, 300.0, 10.0);
-		let coll_body = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0.);
-		let coll_body2 = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0.);
+		let mut coll_body = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0., None, Some(0));
+		let mut coll_body2 = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0., None, Some(0));
+        coll_body.add_collision_group(1);
+        coll_body2.add_collision_group(1);
 
 		engine.create_element("banana".to_owned(), Some(coll_body), 41.0, 0.0);
 		engine
 			.get_element("banana".to_string())
-			.unwrap()
-			.add_collision_group("teste".to_string());
+			.unwrap();
 		engine.create_element("abacate".to_owned(), Some(coll_body2), 0.0, 0.0);
 		engine
 			.get_element("abacate".to_string())
-			.unwrap()
-			.add_collision_group("teste".to_string());
+			.unwrap();
 
 		let collides = get_collision_between_collider_and_moving_object(
 			"banana".to_owned(),
@@ -147,19 +148,19 @@ mod tests {
 	#[test]
 	fn non_collision_horizontal() {
 		let mut engine = Engine::new(320, 240, 300.0, 10.0);
-		let coll_body = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0.);
-		let coll_body2 = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0.);
+		let mut coll_body = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0., None, Some(0));
+		let mut coll_body2 = CollisionBody::new(CollisionShape::RECT, 40, 40, 0., 0., None, Some(0));
+        coll_body.add_collision_group(1);
+        coll_body2.add_collision_group(1);
 
 		engine.create_element("banana".to_owned(), Some(coll_body), 0.0, 41.0);
 		engine
 			.get_element("banana".to_string())
-			.unwrap()
-			.add_collision_group("teste".to_string());
+			.unwrap();
 		engine.create_element("abacate".to_owned(), Some(coll_body2), 0.0, 0.0);
 		engine
 			.get_element("abacate".to_string())
-			.unwrap()
-			.add_collision_group("teste".to_string());
+			.unwrap();
 
 		let collides = get_collision_between_collider_and_moving_object(
 			"banana".to_owned(),
