@@ -4,18 +4,18 @@ use crate::utils::{CollisionShape, Element, Vec2};
 use crate::Engine;
 
 #[wasm_bindgen]
-pub fn get_collision_between_collider_and_moving_object(
-	moving_element: String,
-	collider: String,
+pub fn get_collision_between_two_colliders(
+	collider_a: String,
+	collider_b: String,
 	engine: &Engine,
 ) -> Result<bool, String> {
 	let mut err = String::new();
 
-	let moving_element = engine.get_element(moving_element).unwrap_or_else(|| {
+	let collider_a = engine.get_element(collider_a).unwrap_or_else(|| {
 		err.push_str("Element 1 doesn't exist");
 		Element::default()
 	});
-	let collider = engine.get_element(collider).unwrap_or_else(|| {
+	let collider_b = engine.get_element(collider_b).unwrap_or_else(|| {
 		if !err.is_empty() {
 			err = "Both elements don't exist".to_owned();
 		} else {
@@ -29,25 +29,25 @@ pub fn get_collision_between_collider_and_moving_object(
 	}
 
 	let mut collides = false;
-	moving_element.get_collision_bodies().iter().for_each(|me| {
-		let me_edges = me.get_edges(moving_element.get_pos());
-		collider.get_collision_bodies().iter().for_each(|ce| {
-			let c_edges = ce.get_edges(collider.get_pos());
-			if me
+	collider_a.get_collision_bodies().iter().for_each(|ca| {
+		let me_edges = ca.get_edges(collider_a.get_pos());
+		collider_b.get_collision_bodies().iter().for_each(|cb| {
+			let c_edges = cb.get_edges(collider_b.get_pos());
+			if ca
 				.get_collision_groups()
-				.intersection(ce.get_collision_groups())
+				.intersection(cb.get_collision_groups())
 				.count() == 0
 			{
 				collides = false;
 			} else {
-				match (me.get_shape(), ce.get_shape()) {
+				match (ca.get_shape(), cb.get_shape()) {
 					(CollisionShape::RECT, CollisionShape::RECT) => {
-						me_edges.iter().for_each(|me_edge| {
-							let p0 = me_edge.start;
-							let p1 = me_edge.end;
-							c_edges.iter().for_each(|c_edge| {
-								let p2 = c_edge.start;
-								let p3 = c_edge.end;
+						me_edges.iter().for_each(|ca_edge| {
+							let p0 = ca_edge.start;
+							let p1 = ca_edge.end;
+							c_edges.iter().for_each(|cb_edge| {
+								let p2 = cb_edge.start;
+								let p3 = cb_edge.end;
 								if line_segments_collide(p0, p1, p2, p3) {
 									collides = true;
 								}
@@ -86,7 +86,7 @@ fn line_segments_collide(p0: Vec2<f64>, p1: Vec2<f64>, p2: Vec2<f64>, p3: Vec2<f
 #[cfg(test)]
 mod tests {
 	use crate::{
-		physics::get_collision_between_collider_and_moving_object,
+		physics::get_collision_between_two_colliders,
 		utils::{CollisionBody, CollisionShape},
 		Engine,
 	};
@@ -108,7 +108,7 @@ mod tests {
 			.get_element("abacate".to_string())
 			.unwrap();
 
-		let collides = get_collision_between_collider_and_moving_object(
+		let collides = get_collision_between_two_colliders(
 			"banana".to_owned(),
 			"abacate".to_owned(),
 			&engine,
@@ -135,7 +135,7 @@ mod tests {
 			.get_element("abacate".to_string())
 			.unwrap();
 
-		let collides = get_collision_between_collider_and_moving_object(
+		let collides = get_collision_between_two_colliders(
 			"banana".to_owned(),
 			"abacate".to_owned(),
 			&engine,
@@ -162,7 +162,7 @@ mod tests {
 			.get_element("abacate".to_string())
 			.unwrap();
 
-		let collides = get_collision_between_collider_and_moving_object(
+		let collides = get_collision_between_two_colliders(
 			"banana".to_owned(),
 			"abacate".to_owned(),
 			&engine,

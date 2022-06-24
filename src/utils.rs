@@ -83,9 +83,9 @@ impl CollisionBody {
 	pub fn check_collision_group(&mut self, group: i32) -> bool {
 		self.collision_groups.contains(&group)
 	}
-    pub fn set_rotation(&mut self, degres: f64) {
-        self.rotation = degres;
-    }
+	pub fn set_rotation(&mut self, degres: f64) {
+		self.rotation = degres;
+	}
 }
 
 impl CollisionBody {
@@ -98,66 +98,68 @@ impl CollisionBody {
 				if self.rotation == 0. {
 					return vec![
 						Edge /* top */ {
-                            start: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y),
-                            end: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y),
-                        },
+							start: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y),
+							end: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y),
+						},
 						Edge /* right */ {
-                            start: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y),
-                            end: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64),
-                        },
+							start: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y),
+							end: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64),
+						},
 						Edge /* bottom */ {
-                            start: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64),
-                            end: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y + self.dimensions.y as f64),
-                        },
+							start: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64),
+							end: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y + self.dimensions.y as f64),
+						},
 						Edge /* left */ {
-                            start: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y + self.dimensions.y as f64),
-                            end: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y),
-                        },
+							start: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y + self.dimensions.y as f64),
+							end: vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y),
+						},
 					];
 				}
-				let sin = self.rotation.sin();
-				let cos = self.rotation.cos();
+				let rad = self.rotation * PI / 180.;
+				let sin = rad.sin();
+				let cos = rad.cos();
 				let pivot = vec2(
-					self.pos.x + self.dimensions.x as f64 / 2.,
-					self.pos.y + self.dimensions.y as f64 / 2.,
+					parent_pos.x + self.pos.x + self.dimensions.x as f64 * 0.5,
+					parent_pos.y + self.pos.y + self.dimensions.y as f64 * 0.5,
 				);
 				vec![
 					Edge /* top */ {
-                        start: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y)),
-                        end: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y)),
-                    },
+						start: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y)),
+						end: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y)),
+					},
 					Edge /* right */ {
-                        start: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y)),
-                        end: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64)),
-                    },
+						start: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y)),
+						end: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64)),
+					},
 					Edge /* bottom */ {
-                        start: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64)),
-                        end: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y + self.dimensions.y as f64)),
-                    },
+						start: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64)),
+						end: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y + self.dimensions.y as f64)),
+					},
 					Edge /* left */ {
-                        start: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y + self.dimensions.y as f64)),
-                        end: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y)),
-                    },
+						start: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y + self.dimensions.y as f64)),
+						end: rotate_vertex(pivot, sin, cos, vec2(parent_pos.x + self.pos.x, parent_pos.y + self.pos.y)),
+					},
 				]
 			}
 			CollisionShape::CIRCLE => vec![
 				Edge /* radius */ {
-					start: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64 / 2., parent_pos.y + self.pos.y + self.dimensions.y as f64 / 2.),
-					end: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64 / 2.),
+					start: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64 * 0.5, parent_pos.y + self.pos.y + self.dimensions.y as f64 / 2.),
+					end: vec2(parent_pos.x + self.pos.x + self.dimensions.x as f64, parent_pos.y + self.pos.y + self.dimensions.y as f64 * 0.5),
 				},
 				Edge /* pivot */ {
-                    start: vec2(0., 0.),
-                    end: vec2(0., 0.)
-                },
+					start: vec2(0., 0.),
+					end: vec2(0., 0.)
+				},
 			],
 		}
 	}
 }
 
 fn rotate_vertex(pivot: Vec2<f64>, sin: f64, cos: f64, point: Vec2<f64>) -> Vec2<f64> {
+	let point = vec2(point.x - pivot.x, point.y - pivot.y);
 	vec2(
-		cos * (point.x - pivot.x) - sin * (point.y - pivot.y) + pivot.x,
-		sin * (point.x - pivot.x) + cos * (point.y - pivot.y) + pivot.y,
+		cos * point.x - sin * point.y + pivot.x,
+		sin * point.x + cos * point.y + pivot.y,
 	)
 }
 
@@ -191,8 +193,8 @@ impl Element {
 				let sin = body.rotation.sin();
 				let cos = body.rotation.cos();
 				let pivot = vec2(
-					body.pos.x + body.dimensions.x as f64 / 2.,
-					body.pos.y + body.dimensions.y as f64 / 2.,
+					body.pos.x + body.dimensions.x as f64 * 0.5,
+					body.pos.y + body.dimensions.y as f64 * 0.5,
 				);
 				match body.shape {
 					CollisionShape::RECT => vec![
@@ -215,12 +217,12 @@ impl Element {
 					],
 					CollisionShape::CIRCLE => vec![
 						Edge /* horizontal radius */ {
-							start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 / 2., self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
-							end: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64, self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
+							start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 * 0.5, self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
+							end: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64, self.pos.y + body.pos.y + body.dimensions.y as f64 * 0.5),
 						},
 						Edge /* vertical radius */ {
-							start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 / 2., self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
-							end: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 / 2., self.pos.y + body.pos.y),
+							start: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 * 0.5, self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.),
+							end: vec2(self.pos.x + body.pos.x + body.dimensions.x as f64 * 0.5, self.pos.y + body.pos.y),
 						}
 					],
 				}
@@ -254,37 +256,26 @@ impl Element {
 			.iter()
 			.for_each(|body| match body.shape {
 				CollisionShape::RECT => {
-					if body.rotation != 0.0 {
-						let rotation = body.rotation * PI / 180.0;
-						let translation = (
-							self.pos.x + body.pos.x + body.dimensions.x as f64 / 2.,
-							self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.,
-						);
-						context.translate(translation.0, translation.1).unwrap();
-						context.rotate(rotation).unwrap();
-						context.rect(
-							-(self.pos.x + body.pos.x) / 2.,
-							-(self.pos.y + body.pos.y) / 2.,
-							body.dimensions.x as f64,
-							body.dimensions.y as f64,
-						);
-						context.rotate(-rotation).unwrap();
-						context.translate(-translation.0, -translation.1).unwrap();
-					} else {
-						context.rect(
-							self.pos.x + body.pos.x,
-							self.pos.y + body.pos.y,
-							body.dimensions.x as f64,
-							body.dimensions.y as f64,
-						);
-					}
+					body.get_edges(self.pos).iter().for_each(|edge| {
+						context.line_to(edge.start.x, edge.start.y);
+						context.line_to(edge.end.x, edge.end.y);
+					});
+					context
+						.arc(
+							self.pos.x + body.pos.x + body.dimensions.x as f64 * 0.5 - 2.,
+							self.pos.y + body.pos.y + body.dimensions.y as f64 * 0.5 - 2.,
+							2.,
+							0.,
+							PI * 2.,
+						)
+						.unwrap();
 				}
 				CollisionShape::CIRCLE => {
 					context
 						.arc(
-							self.pos.x + body.pos.x + body.dimensions.x as f64 / 2.,
-							self.pos.y + body.pos.y + body.dimensions.y as f64 / 2.,
-							body.dimensions.x as f64 / 2.,
+							self.pos.x + body.pos.x + body.dimensions.x as f64 * 0.5,
+							self.pos.y + body.pos.y + body.dimensions.y as f64 * 0.5,
+							body.dimensions.x as f64 * 0.5,
 							0.,
 							PI * 2.,
 						)

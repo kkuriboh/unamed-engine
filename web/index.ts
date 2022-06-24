@@ -2,7 +2,7 @@ import init, {
 	CollisionBody,
 	Engine,
 	CollisionShape,
-	get_collision_between_collider_and_moving_object,
+	get_collision_between_two_colliders,
 } from './pkg/engine.js'
 /*import {
 	load_image,
@@ -30,26 +30,42 @@ function run() {
 		GAME_SPEED,
 		GAME_ACCELERATION
 	)
-	const coll_body = new CollisionBody(CollisionShape.RECT, 100, 100, 0, 0, 45, 1)
-	const coll_body2 = new CollisionBody(CollisionShape.RECT, 100, 100, 0, 0, 20, 1)
-	const coll_body3 = new CollisionBody(CollisionShape.RECT, 100, 100, 0, 0, 0, 1)
+	const coll_body = new CollisionBody(
+		CollisionShape.RECT,
+		100,
+		100,
+		0,
+		0,
+		90,
+		1
+	)
+	const coll_body2 = new CollisionBody(
+		CollisionShape.RECT,
+		100,
+		100,
+		0,
+		0,
+		0,
+		1
+	)
+	// const coll_body3 = new CollisionBody(CollisionShape.RECT, 100, 100, 0, 0, 0, 1)
 
-	engine.create_element('banana', coll_body, 100, 100)
+	engine.create_element('banana', coll_body, 210, 100)
 	engine.create_element('avocado', coll_body2, 100, 100)
-	engine.create_element('orange', coll_body3, 100, 100)
+	// engine.create_element('orange', coll_body3, 100, 100)
 
 	engine.get_element('banana')?.draw_collisions(engine)
-	// engine.get_element('avocado')?.draw_collisions(engine)
-	engine.get_element('orange')?.draw_collisions(engine)
+	engine.get_element('avocado')?.draw_collisions(engine)
+	// engine.get_element('orange')?.draw_collisions(engine)
 
-	const test = get_collision_between_collider_and_moving_object(
+	const test = get_collision_between_two_colliders(
 		'banana',
-		'orange',
+		'avocado',
 		engine
 	)
 	console.log({ teste: test })
 
-	engine.get_context().fillText("is colliding: " + test, 10, 20)
+	engine.get_context().fillText('is colliding: ' + test, 10, 20)
 
 	// window.requestAnimationFrame(async () => await game_loop(update, 60))
 
